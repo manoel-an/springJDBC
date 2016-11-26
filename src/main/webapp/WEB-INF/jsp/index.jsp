@@ -55,15 +55,11 @@
                 </tr>
                 <tr>
                     <td class="alignCenter">
-                        &nbsp;
+                        <a href="cadastrarAluno.html" class="hiperlink">Cadastrar novo aluno.</a>
                     </td>
                     <td class="alignCenter">
                         <a href="cadastrarProduto.html" class="hiperlink">Cadastrar novo produto.</a>
                     </td>
-                </tr>
-                <tr>
-                    <td class="alignCenter"><br></td>
-                    <td class="alignCenter"><br></td>
                 </tr>
             </table>
         </div>
