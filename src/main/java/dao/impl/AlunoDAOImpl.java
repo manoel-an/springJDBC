@@ -15,7 +15,6 @@ import org.springframework.stereotype.Repository;
 
 import dao.AlunoDAO;
 import model.Aluno;
-import model.Produto;
 
 /**
  *
@@ -64,15 +63,15 @@ public class AlunoDAOImpl implements AlunoDAO {
 	}
 
 	/**
-	 * Metodo chamado para listar todos os produtos na tabela Produto do banco
-	 * de dados.
+	 * Metodo chamado para listar todos os alunos na tabela Aluno do banco de
+	 * dados.
 	 * 
 	 * @return
 	 */
 	public List todosAlunos() {
 		String sql = "SELECT * FROM aluno";
-		List<Produto> listProdutos = jdbcTemplate.query(sql, new ProdutoMapper());
-		return listProdutos;
+		List<Aluno> listaAlunos = jdbcTemplate.query(sql, new AlunoMapper());
+		return listaAlunos;
 	}
 
 	/**
@@ -83,7 +82,7 @@ public class AlunoDAOImpl implements AlunoDAO {
 	 * @return
 	 */
 	public Aluno procurarAluno(String cpf) {
-		String sql = "SELECT * FROM aluno WHERE codigo=?";
+		String sql = "SELECT * FROM aluno WHERE cpf=?";
 		try {
 			Aluno aluno = jdbcTemplate.queryForObject(sql, new Object[] { cpf }, new AlunoMapper());
 			return aluno;

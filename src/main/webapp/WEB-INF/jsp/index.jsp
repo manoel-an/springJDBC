@@ -1,7 +1,7 @@
 <%-- 
     Document   : index
-    Created on : 19 mai 2011, 11:15:04
-    Author     : vinicius
+    Created on : 08 dez 2016, 22:48:04
+    Author     : Manoel
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -55,7 +55,7 @@
                 </tr>
                 <tr>
                     <td class="alignCenter">
-                        <a href="cadastrarAluno.html" class="hiperlink">Cadastrar novo aluno.</a>
+                        <a href="aluno.html" class="hiperlink">Página de Aluno.</a>
                     </td>
                     <td class="alignCenter">
                         <a href="cadastrarProduto.html" class="hiperlink">Cadastrar novo produto.</a>
