@@ -7,7 +7,6 @@ package validator;
 
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
-import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
 import model.PesquisaAluno;
@@ -24,10 +23,13 @@ public class ValidatorPesquisaAluno implements Validator {
 	}
 
 	public void validate(Object o, Errors errors) {
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "cpf", "cpf.obrigatorio");
+		// ValidationUtils.rejectIfEmptyOrWhitespace(errors, "cpf",
+		// "cpf.obrigatorio");
 		PesquisaAluno pesquisa = (PesquisaAluno) o;
-		if (pesquisa.getCpf().length() < 14 || pesquisa.getCpf().length() > 14) {
-			errors.rejectValue("cpf", "cpf.invalido");
+		if (pesquisa.getCpf().length() > 1) {
+			if (pesquisa.getCpf().length() < 14 || pesquisa.getCpf().length() > 14) {
+				errors.rejectValue("cpf", "cpf.invalido");
+			}
 		}
 	}
 

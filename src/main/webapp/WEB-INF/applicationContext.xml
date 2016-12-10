@@ -21,7 +21,7 @@
         p:driverClassName="org.postgresql.Driver"
         p:url="jdbc:postgresql://localhost/postgres"
         p:username="postgres"
-        p:password="00298074" />
+        p:password="aula321" />
     <!-- Mesma funcao do trecho acima, muda apenas sintaxe -->
     <!--bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
         <property name="driverClassName" value="org.postgresql.Driver"/>

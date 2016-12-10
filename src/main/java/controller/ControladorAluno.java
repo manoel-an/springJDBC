@@ -66,6 +66,7 @@ public class ControladorAluno {
 		}
 	}
 
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/buscarAluno", method = RequestMethod.POST)
 	public String pesquisarAluno(ModelMap model, @ModelAttribute("pesquisaAluno") PesquisaAluno pesquisa,
 			BindingResult bResult) {
@@ -77,6 +78,8 @@ public class ControladorAluno {
 			Aluno aluno = alunoDAO.procurarAluno(pesquisa.getCpf());
 			if (aluno != null) {
 				pesqAluno.add(aluno);
+			} else {
+				pesqAluno = alunoDAO.todosAlunos();
 			}
 			model.addAttribute("listaAlunos", pesqAluno);
 			return "aluno/mostrarAlunos";
