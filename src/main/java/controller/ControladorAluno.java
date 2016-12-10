@@ -5,6 +5,7 @@
 
 package controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,10 @@ import org.springframework.web.servlet.ModelAndView;
 
 import dao.AlunoDAO;
 import model.Aluno;
+import model.PesquisaAluno;
 import model.Produto;
 import validator.ValidatorAluno;
+import validator.ValidatorPesquisaAluno;
 
 /**
  *
@@ -35,6 +38,9 @@ public class ControladorAluno {
 
 	@Autowired
 	private ValidatorAluno validatorAluno;
+
+	@Autowired
+	private ValidatorPesquisaAluno validatorPesquisaAluno;
 
 	@RequestMapping("/aluno")
 	public ModelAndView controleAluno() {
@@ -60,11 +66,29 @@ public class ControladorAluno {
 		}
 	}
 
+	@RequestMapping(value = "/buscarAluno", method = RequestMethod.POST)
+	public String pesquisarAluno(ModelMap model, @ModelAttribute("pesquisaAluno") PesquisaAluno pesquisa,
+			BindingResult bResult) {
+		validatorPesquisaAluno.validate(pesquisa, bResult);
+		if (bResult.hasErrors()) {
+			return "aluno/mostrarAlunos";
+		} else {
+			List<Aluno> pesqAluno = new ArrayList<Aluno>(0);
+			Aluno aluno = alunoDAO.procurarAluno(pesquisa.getCpf());
+			if (aluno != null) {
+				pesqAluno.add(aluno);
+			}
+			model.addAttribute("listaAlunos", pesqAluno);
+			return "aluno/mostrarAlunos";
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/mostrarAlunos", method = RequestMethod.GET)
 	public String mostraAlunos(ModelMap model) {
 		List<Aluno> listaAlunos = alunoDAO.todosAlunos();
 		model.addAttribute("listaAlunos", listaAlunos);
+		model.addAttribute("pesquisaAluno", new PesquisaAluno());
 		return "aluno/mostrarAlunos";
 	}
 

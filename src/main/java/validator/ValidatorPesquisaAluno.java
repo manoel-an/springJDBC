@@ -10,26 +10,23 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import model.Aluno;
+import model.PesquisaAluno;
 
 /**
  *
  * @author Manoel
  */
 @Component
-public class ValidatorAluno implements Validator {
+public class ValidatorPesquisaAluno implements Validator {
 
 	public boolean supports(Class<?> type) {
-		return Aluno.class.equals(type);
+		return PesquisaAluno.class.equals(type);
 	}
 
 	public void validate(Object o, Errors errors) {
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "nome", "nome.obrigatorio");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "numeroMatricula", "matricula.obrigatorio");
-		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "anoIngresso", "ano.obrigatorio");
 		ValidationUtils.rejectIfEmptyOrWhitespace(errors, "cpf", "cpf.obrigatorio");
-		Aluno aluno = (Aluno) o;
-		if (aluno.getCpf().length() < 14 || aluno.getCpf().length() > 14) {
+		PesquisaAluno pesquisa = (PesquisaAluno) o;
+		if (pesquisa.getCpf().length() < 14 || pesquisa.getCpf().length() > 14) {
 			errors.rejectValue("cpf", "cpf.invalido");
 		}
 	}
