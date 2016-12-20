@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:aop="http://www.springframework.org/schema/aop"
-       xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
        http://www.springframework.org/schema/aop
        http://www.springframework.org/schema/aop/spring-aop-3.0.xsd
@@ -14,40 +12,59 @@
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context-3.0.xsd">
 
-    <!-- Scans within the base package of the application for @Components to configure as beans -->
-    <context:component-scan base-package="dao.impl, validator" />
+	<bean id="dataSource"
+		class="org.springframework.jdbc.datasource.DriverManagerDataSource"
+		p:driverClassName="org.postgresql.Driver" p:url="jdbc:postgresql://localhost/postgres"
+		p:username="postgres" p:password="root" />
 
-    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"
-        p:driverClassName="org.postgresql.Driver"
-        p:url="jdbc:postgresql://localhost/postgres"
-        p:username="postgres"
-        p:password="aula321" />
-    <!-- Mesma funcao do trecho acima, muda apenas sintaxe -->
-    <!--bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="org.postgresql.Driver"/>
-        <property name="url" value="jdbc:postgresql://localhost/empresa"/>
-        <property name="username" value="vinicius"/>
-        <property name="password" value="vinicius"/>
-    </bean-->
-    
-    <bean id="messageSource"
-          class="org.springframework.context.support.ResourceBundleMessageSource"
-          p:basename="messages.messages" />
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="annotatedClasses">
+			<list>
+				<value>model.Cliente</value>
+				<value>model.Produto</value>
+				<value>model.Endereco</value>
+			</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+				<prop key="hibernate.show_sql">true</prop> <!--Permite exibir sentenca SQL no console -->
+				<prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
+				<prop key="hibernate.temp.use_jdbc_metadata_defaults">false</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				<!--false: gera-se classe para getters e setters em tempo de execucao; 
+					true: gera-se o bytecode na inicializacao (mais lenta) -->
+			</props>
+		</property>
+	</bean>
 
-    <!-- Se e feito busca de anotacoes, nao e preciso declarar os beans. Caso contrario, e preciso. -->
-    <!-- 
-    <bean id="clienteDAOImpl" class="dao.impl.ClienteDAOImpl" p:dataSource-ref="dataSource" />
+	<!-- Transaction Manager Configuration - txManager controla as transacoes 
+		(commit, rollback, ...) -->
+	<bean id="txManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
 
-    <bean id="produtoDAOImpl" class="dao.impl.ProdutoDAOImpl" p:dataSource-ref="dataSource" />
+	<!-- Uso de annotations para controle de transações - busca por classes 
+		e metodos anotados -->
+	<tx:annotation-driven transaction-manager="txManager" />
 
-    <bean id="validatorCliente" class="validator.ValidatorCliente" />
+	<context:component-scan base-package="dao.impl, view" />
 
-    <bean id="validatorProduto" class="validator.ValidatorProduto" />
-    -->
 
-<!-- Neste caso, os 2 beans abaixo estao disponiveis a todos frontcontrollers.
-    <bean id="controladorCliente" class="controller.ControladorCliente" />
-    <bean id="controladorProduto" class="controller.ControladorProduto" />
--->    
-    
+	<!-- ===============================DAOs================================ -->
+	<!-- NAO E PRECISO DECLARAR OS BEANS DAO.IMPL PORQUE ELES ESTAO ANOTADOS 
+		<bean id="clienteDAOImpl" class="dao.impl.ClienteDAOImpl" /> <bean id="enderecoDAOImpl" 
+		class="dao.impl.EnderecoDAOImpl" /> <bean id="produtoDAOImpl" class="dao.impl.ProdutoDAOImpl" 
+		/> -->
+
+	<!-- ======================Beans acessados na View====================== -->
+	<!-- NAO E PRECISO DECLARAR OS BEANS VIEW PORQUE ELES ESTAO ANOTADOS <bean 
+		id="localeBean" class="view.LocaleBean" scope="session" /> <bean id="clienteBean" 
+		class="view.ClienteBean" scope="session" /> <bean id="produtoBean" class="view.ProdutoBean" 
+		scope="session" /> <bean id="carrinhoBean" class="view.CarrinhoBean" scope="session" 
+		/> -->
+
 </beans>

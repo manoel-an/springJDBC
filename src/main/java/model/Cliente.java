@@ -5,186 +5,259 @@
 
 package model;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Objects;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
+import java.util.List;
+
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
 /**
  *
  * @author vinicius
  */
-@Component
-@Scope(value = "session", proxyMode = ScopedProxyMode.TARGET_CLASS)
-public class Cliente {
+@Entity
+@Table(name = "cliente")
+@AttributeOverride(name = "objectID", column = @Column(name = "cliente_id"))
+@SequenceGenerator(name = "SEQUENCE", sequenceName = "cliente_cliente_id_seq")
+public class Cliente extends BaseModel {
 
-    private String nome;
-    private String telefoneFixo;
-    private String telefoneCelular;
-    private String sexo;
-    private String usuario;
-    private String senha;
-    private Date dataNascimento = new Date();
-    private long cpf;
+	@Column
+	private String nome;
 
-    public Cliente() {
-        //Em branco
-    }
+	@Column(name = "telefone_fixo")
+	private String telefoneFixo;
 
-    public Cliente(String nome, String telefoneFixo, String telefoneCelular, String sexo,
-                   String usuario, String senha, Date dataNascimento, long cpf){
-        this.nome = nome.trim();
-        this.telefoneFixo = telefoneFixo.trim();
-        this.telefoneCelular = telefoneCelular.trim();
-        this.sexo = sexo.trim();
-        this.usuario = usuario.trim();
-        this.senha = senha.trim();
-        this.dataNascimento = dataNascimento;
-        this.cpf = cpf;
-    }
+	@Column(name = "telefone_celular")
+	private String telefoneCelular;
 
-    /**
-     * @return the nome
-     */
-    public String getNome() {
-        return nome;
-    }
+	@Column
+	private String sexo;
 
-    /**
-     * @param nome the nome to set
-     */
-    public void setNome(String nome) {
-        this.nome = nome.trim();
-    }
+	@Column
+	private String usuario;
 
-    /**
-     * @return the telefoneFixo
-     */
-    public String getTelefoneFixo() {
-        return telefoneFixo;
-    }
+	@Column
+	private String senha;
 
-    /**
-     * @param telefoneFixo the telefoneFixo to set
-     */
-    public void setTelefoneFixo(String telefoneFixo) {
-        this.telefoneFixo = telefoneFixo.trim();
-    }
+	@Temporal(TemporalType.DATE)
+	@Column(name = "data_nascimento", nullable = false, length = 10)
+	private Date dataNascimento;
 
-    /**
-     * @return the telefoneCelular
-     */
-    public String getTelefoneCelular() {
-        return telefoneCelular;
-    }
+	@Column(name = "cpf", nullable = false)
+	private long cpf;
 
-    /**
-     * @param telefoneCelular the telefoneCelular to set
-     */
-    public void setTelefoneCelular(String telefoneCelular) {
-        this.telefoneCelular = telefoneCelular.trim();
-    }
+	// FetchType: EAGER anteriormente buscados; LAZY: posteriormente buscados
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	// @Cascade(org.hibernate.annotations.CascadeType.DELETE)
+	@JoinColumn(name = "cliente_id")
+	private List<Endereco> enderecos;
 
-    /**
-     * @return the sexo
-     */
-    public String getSexo() {
-        return sexo;
-    }
+	private EnumPerfil perfil;
 
-    /**
-     * @param sexo the sexo to set
-     */
-    public void setSexo(String sexo) {
-        this.sexo = sexo.trim();
-    }
+	// Cpf do tipo string - para auxiliar a trabalhar com mascara.
+	@Transient
+	private String cpfs = "";
 
-    /**
-     * @return the usuario
-     */
-    public String getUsuario() {
-        return usuario;
-    }
+	public Cliente() {
+	}
 
-    /**
-     * @param usuario the usuario to set
-     */
-    public void setUsuario(String usuario) {
-        this.usuario = usuario.trim();
-    }
+	public Cliente(String nome, String telefoneCelular, String telefoneFixo, String sexo, String usuario, String senha,
+			Date dataNascimento, int cpf, List<Endereco> enderecos, EnumPerfil perfil) {
+		this.nome = nome;
+		this.telefoneCelular = telefoneCelular;
+		this.telefoneFixo = telefoneFixo;
+		this.sexo = sexo;
+		this.usuario = usuario;
+		this.senha = senha;
+		this.dataNascimento = dataNascimento;
+		this.cpf = cpf;
+		this.enderecos = enderecos;
+		this.perfil = perfil;
+	}
 
-    /**
-     * @return the senha
-     */
-    public String getSenha() {
-        return senha;
-    }
+	/**
+	 * @return the nome
+	 */
+	public String getNome() {
+		return nome;
+	}
 
-    /**
-     * @param senha the senha to set
-     */
-    public void setSenha(String senha) {
-        this.senha = senha.trim();
-    }
+	/**
+	 * @param nome
+	 *            the nome to set
+	 */
+	public void setNome(String nome) {
+		this.nome = nome;
+	}
 
-    /**
-     * @return the dataNascimento
-     */
-    public Date getDataNascimento() {
-        return dataNascimento;
-    }
+	/**
+	 * @return the telefone_fixo
+	 */
+	public String getTelefoneFixo() {
+		return telefoneFixo;
+	}
 
-    /**
-     * @param dataNascimento the dataNascimento to set
-     */
-    public void setDataNascimento(Date dataNascimento) {
-        this.dataNascimento = dataNascimento;
-    }
+	/**
+	 * @param telefoneFixo
+	 *            the telefone_fixo to set
+	 */
+	public void setTelefoneFixo(String telefoneFixo) {
+		this.telefoneFixo = telefoneFixo;
+	}
 
-    /**
-     * @return the cpf
-     */
-    public long getCpf() {
-        return cpf;
-    }
+	/**
+	 * @return the telefone_celular
+	 */
+	public String getTelefoneCelular() {
+		return telefoneCelular;
+	}
 
-    /**
-     * @param cpf the cpf to set
-     */
-    public void setCpf(long cpf) {
-        this.cpf = cpf;
-    }
+	/**
+	 * @param telefoneCelular
+	 *            the telefone_celular to set
+	 */
+	public void setTelefoneCelular(String telefoneCelular) {
+		this.telefoneCelular = telefoneCelular;
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(nome, usuario, cpf, sexo);
-    }
+	/**
+	 * @return the sexo
+	 */
+	public String getSexo() {
+		return sexo;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final Cliente cli = (Cliente) obj;
-        if (!Objects.equals(this.nome, cli.nome)) {
-            return false;
-        }
-        if (!Objects.equals(this.usuario, cli.usuario)) {
-            return false;
-        }
-        if (!Objects.equals(this.cpf, cli.cpf)) {
-            return false;
-        }
-        if (!Objects.equals(this.sexo, cli.sexo)) {
-            return false;
-        }
-        // ... fazer para todos
-        return true;
-    }
+	/**
+	 * @param sexo
+	 *            the sexo to set
+	 */
+	public void setSexo(String sexo) {
+		this.sexo = sexo;
+	}
 
-    
+	/**
+	 * @return the usuario
+	 */
+	public String getUsuario() {
+		return usuario;
+	}
+
+	/**
+	 * @param usuario
+	 *            the usuario to set
+	 */
+	public void setUsuario(String usuario) {
+		this.usuario = usuario;
+	}
+
+	/**
+	 * @return the senha
+	 */
+	public String getSenha() {
+		return senha;
+	}
+
+	/**
+	 * @param senha
+	 *            the senha to set
+	 */
+	public void setSenha(String senha) {
+		this.senha = senha;
+	}
+
+	/**
+	 * @return the data_nascimento
+	 */
+	public Date getDataNascimento() {
+		return dataNascimento;
+	}
+
+	/**
+	 * @param dataNascimento
+	 *            the data_nascimento to set
+	 */
+	public void setDataNascimento(Date dataNascimento) {
+		this.dataNascimento = dataNascimento;
+	}
+
+	/**
+	 * @return the cpf
+	 */
+	public long getCpf() {
+		return cpf;
+	}
+
+	/**
+	 * @param cpf
+	 *            the cpf to set
+	 */
+	public void setCpf(long cpf) {
+		this.cpf = cpf;
+	}
+
+	public void setCpfs(String cpfs) {
+		cpfs = cpfs.trim();
+		this.cpfs = cpfs;
+		try {
+			cpfs = this.cpfs.substring(0, 3); // 111.111.111-11
+			cpfs += this.cpfs.substring(4, 7);
+			cpfs += this.cpfs.substring(8, 11);
+			cpfs += this.cpfs.substring(12, 14);
+		} catch (Exception e) {
+			// do nothing;
+		}
+		this.cpf = Long.parseLong(cpfs);
+	}
+
+	public String getCpfs() {
+		String cpfs = String.valueOf(this.cpf);
+		try {
+			cpfs = cpfs.substring(0, 3) + "." + cpfs.substring(3, 6) + "." + cpfs.substring(6, 9) + "-"
+					+ cpfs.substring(9, 11);
+		} catch (Exception e) {
+			// do nothing;
+		}
+		return cpfs;
+	}
+
+	/**
+	 * @return the enderecos
+	 */
+	public List<Endereco> getEnderecos() {
+		if (enderecos == null) {
+			enderecos = new ArrayList<Endereco>();
+		}
+		return enderecos;
+	}
+
+	/**
+	 * @param enderecos
+	 *            the enderecos to set
+	 */
+	public void setEnderecos(List<Endereco> enderecos) {
+		this.enderecos = enderecos;
+	}
+
+    @Enumerated(EnumType.STRING)
+	public EnumPerfil getPerfil() {
+		return perfil;
+	}
+
+	public void setPerfil(EnumPerfil perfil) {
+		this.perfil = perfil;
+	}
+
 }

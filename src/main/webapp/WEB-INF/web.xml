@@ -1,50 +1,50 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app version="2.5" 
-    xmlns="http://java.sun.com/xml/ns/javaee"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
-                        http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
-
-    <!-- Parametros de configuracao de contexto do servlet da aplicacao web: -->
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>/WEB-INF/applicationContext.xml</param-value>
-    </context-param>    
-    
-    <!-- Inspeciona os parametros do contextConfigLocation. Se nao existir parametro, o listener usa
-    /WEB-INF/applicationContext.xml como default. -->
+<web-app version="2.5" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
+         http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+<!--<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+         http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd">-->
+       
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
-    
-    <!-- Informa a aplicacao quem sera o servlet Expedidor e qual o momento da sua carga. O servlet controla as
-    requisicoes baseada nas configuracoes no arquivo xxxx-servlet.xml; neste caso, dispatcher-servlet.xml 
-    Este servlet e o "Front Controller" -->    
+<!--
+Para carregar o contexto da aplicacao do Spring no momento de inicializacao da aplicacao, deve-se
+registrar o servlet ouvinte ContextLoaderListener. O arquivo com as configuracoes da aplicacao, 
+informado em seguida e o applicationContext.xml:
+-->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>/WEB-INF/applicationContext.xml</param-value>
+    </context-param>
+<!--
+Nas linhas abaixo, defini-se o servlet da aplicacao que recebe as requisicoes web:
+-->
     <servlet>
-        <servlet-name>dispatcher</servlet-name>
-        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <servlet-name>Faces Servlet</servlet-name>
+        <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
     </servlet>
-    <!--Definicao do mapeamento das requisicoes -->
-    <servlet-mapping> <!-- html mapping - Redundante, devido ao mapeamento abaixo -->
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>*.html</url-pattern>
+    <servlet-mapping>
+        <servlet-name>Faces Servlet</servlet-name>
+        <url-pattern>*.xhtml</url-pattern>
     </servlet-mapping>
-    <servlet-mapping> <!-- default mapping -->
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/</url-pattern>
-    </servlet-mapping>
-    
-    <!-- Tempo de duracao de uma sessao, em caso de inatividade -->
+    <context-param>
+	<param-name>javax.faces.DEFAULT_SUFFIX</param-name>
+	<param-value>.xhtml</param-value>
+    </context-param>
+
     <session-config>
         <session-timeout>
             30
         </session-timeout>
     </session-config>
-    
-    <!-- Endereco inicialmente exebido caso se chame a raiz da aplicacao -->
     <welcome-file-list>
-        <welcome-file>redirect.jsp</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
     <!--Forca uso de codificacao UTF-8 -->
@@ -60,10 +60,8 @@
             <param-value>true</param-value>
         </init-param>
     </filter>
-
     <filter-mapping>
         <filter-name>encodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
-    </filter-mapping>
- 
+    </filter-mapping>    
 </web-app>

@@ -5,29 +5,42 @@
 
 package model;
 
-import org.springframework.stereotype.Component;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 
 /**
  *
  * @author vinicius
  */
-@Component
-public class Produto {
+@Entity
+@Table(name = "produto")
+@AttributeOverride(name="objectID", column=@Column(name="produto_id"))
+@SequenceGenerator(name = "SEQUENCE", sequenceName = "produto_produto_id_seq")
+public class Produto extends BaseModel{
 
+    @Column(name = "nome") //(name = "nome") somente necessario quando atributo e coluna forem diferentes
     private String nome;
-    private float preco;
+
+    @Column
     private String descricao;
+
+    @Column
     private int codigo;
+    
+    @Column
+    private float preco;
 
     public Produto() {
-        //Em branco
     }
 
-    public Produto(String nome, float preco, String descricao, int codigo) {
+    public Produto(String nome, String descricao, int codigo, float preco) {
         this.nome = nome;
-        this.preco = preco;
         this.descricao = descricao;
         this.codigo = codigo;
+        this.preco = preco;
     }
 
     /**
@@ -41,21 +54,7 @@ public class Produto {
      * @param nome the nome to set
      */
     public void setNome(String nome) {
-        this.nome = nome.trim();
-    }
-
-    /**
-     * @return the preco
-     */
-    public float getPreco() {
-        return preco;
-    }
-
-    /**
-     * @param preco the preco to set
-     */
-    public void setPreco(float preco) {
-        this.preco = preco;
+        this.nome = nome;
     }
 
     /**
@@ -69,7 +68,7 @@ public class Produto {
      * @param descricao the descricao to set
      */
     public void setDescricao(String descricao) {
-        this.descricao = descricao.trim();
+        this.descricao = descricao;
     }
 
     /**
@@ -84,6 +83,20 @@ public class Produto {
      */
     public void setCodigo(int codigo) {
         this.codigo = codigo;
+    }
+
+    /**
+     * @return the preco
+     */
+    public float getPreco() {
+        return preco;
+    }
+
+    /**
+     * @param preco the preco to set
+     */
+    public void setPreco(float preco) {
+        this.preco = preco;
     }
 
 }

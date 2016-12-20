@@ -6,171 +6,98 @@
 package dao.impl;
 
 import dao.ProdutoDAO;
+import java.util.ArrayList;
 import model.Produto;
 import java.util.List;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import org.springframework.jdbc.core.support.JdbcDaoSupport;
-import org.springframework.jdbc.datasource.DriverManagerDataSource;
-
-///**
-// *
-// * @author vinicius
-// */
-////ESTENDENDO JdbcDaoSupport E SEM USAR ANOTACOES
-////A anotacao @Repository permite que a classe seja encontrada para que seja configurada sem
-////a necessidade de fornecer um arquivo XML de configuracao.
-////Utilizada para busca de classes que possuem objeto dataSource para ser injetado.
-////Desnecessario quando se estende JdbcDaoSupport
-////@Repository 
-//public class ProdutoDAOImpl extends JdbcDaoSupport implements ProdutoDAO {
-//
-////    DESNECESSARIO QUANDO SE ESTENDE JdbcDaoSupport
-////    private JdbcTemplate jdbcTemplate;
-////
-////    @Autowired
-////    public void setDataSource(DriverManagerDataSource dataSource) {
-////        this.jdbcTemplate = new JdbcTemplate(dataSource);
-////    }
-//
-//    /**
-//     * Metodo chamado para atualizar produto na tabela Produto do banco de dados.
-//     * @param produto
-//     */
-//    public void atualizar (Produto produto){ 
-//        String sql = "UPDATE produto SET nome=?, preco=?, descricao=? " +
-//                    "WHERE codigo=?";
-//        getJdbcTemplate().update(sql, new Object[] {produto.getNome(), produto.getPreco(),
-//                                    produto.getDescricao(), produto.getCodigo()});
-//    }
-//
-//    /**
-//     * Metodo chamado para excluir produto na tabela Produto do banco de dados.
-//     * @param produto
-//     */
-//    public void excluir (Produto produto) {
-//        String sql = "DELETE FROM produto WHERE codigo = ?";
-//        getJdbcTemplate().update(sql, produto.getCodigo());
-//    }
-//
-//    /**
-//     * Metodo chamado para adicionar produto na tabela Produto do banco de dados.
-//     * @param produto
-//     */
-//    public void salvar (Produto produto) {
-//        String sql = "INSERT INTO produto (nome, preco, descricao, codigo) " +
-//                    "values (?, ?, ?, ?)";
-//        getJdbcTemplate().update(sql, new Object[] {produto.getNome(), produto.getPreco(),
-//                                    produto.getDescricao(), produto.getCodigo()});
-//    }
-//
-//    /**
-//     * Metodo chamado para listar todos os produtos na tabela Produto do banco de dados.
-//     * @return
-//     */
-//    public List todosProdutos () { 
-//        String sql = "SELECT * FROM produto";
-//        List<Produto> listProdutos = getJdbcTemplate().query(sql, new ProdutoMapper());
-//        return listProdutos;
-//    }
-//
-//    /**
-//     * Metodo chamado para executar query para procurar produto na tabela
-//     * Produto do banco de dados. Parametro da consulta: codigo.
-//     * @param codigo
-//     * @return
-//     */
-//    public Produto procurarProduto(int codigo) {
-//        String sql = "SELECT * FROM produto WHERE codigo=?";
-//        try {
-//            Produto produto = getJdbcTemplate().queryForObject(sql,
-//                    new Object[] {codigo},
-//                    new ProdutoMapper());
-//            return produto;
-//        } catch (EmptyResultDataAccessException e) {
-//            return null;
-//        }
-//    }
-//
-//}
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
  * @author vinicius
  */
-//********* SEM ESTENDER JdbcDaoSupport E USANDO ANOTACOES
-//A anotacao @Repository permite que a classe seja encontrada para que seja configurada sem
-//a necessidade de fornecer um arquivo XML de configuracao.
-//Utilizada para busca de classes que possuem objeto dataSource para ser injetado.
-//Desnecessario quando se estende JdbcDaoSupport
-@Repository 
+@Repository
 public class ProdutoDAOImpl implements ProdutoDAO {
 
-    private JdbcTemplate jdbcTemplate;
-
+    /**
+     * Objeto de sessao com Banco de Dados
+     */
     @Autowired
-    public void setDataSource(DriverManagerDataSource dataSource) {
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
-    }
+    //Caso houvesse mais de um bean tipo SessionFactory, seria preciso:
+    //@Qualifier("sessionFactory")
+    private SessionFactory sessionFactory;
 
     /**
      * Metodo chamado para atualizar produto na tabela Produto do banco de dados.
-     * @param produto
+     * @param Produto
      */
-    public void atualizar (Produto produto){ 
-        String sql = "UPDATE produto SET nome=?, preco=?, descricao=? " +
-                    "WHERE codigo=?";
-        jdbcTemplate.update(sql, new Object[] {produto.getNome(), produto.getPreco(),
-                                    produto.getDescricao(), produto.getCodigo()});
+    @Transactional  //Delega ao Hibernate o controle de transacoes
+    public void atualizar (Produto produto){
+//==========================Como seria sem o txManager:=========================
+//        Session session = this.sessionFactory.getCurrentSession();
+//        Transaction trans = null;
+//        if (cliente != null)
+//            try {
+//                trans = session.beginTransaction();
+//                session.update(produto);
+//                trans.commit();
+//            } catch (Exception e) {
+//                trans.rollback();
+//            } finally {
+//                session.close();
+//            }
+//==========================Como fica com o txManager:==========================
+        this.sessionFactory.getCurrentSession().update(produto);
     }
 
     /**
      * Metodo chamado para excluir produto na tabela Produto do banco de dados.
-     * @param produto
+     * @param Produto
      */
+    @Transactional
     public void excluir (Produto produto) {
-        String sql = "DELETE FROM produto WHERE codigo = ?";
-        jdbcTemplate.update(sql, produto.getCodigo());
+        this.sessionFactory.getCurrentSession().delete(produto);
     }
 
     /**
      * Metodo chamado para adicionar produto na tabela Produto do banco de dados.
-     * @param produto
+     * @param Produto
      */
+    @Transactional
     public void salvar (Produto produto) {
-        String sql = "INSERT INTO produto (nome, preco, descricao, codigo) " +
-                    "values (?, ?, ?, ?)";
-        jdbcTemplate.update(sql, new Object[] {produto.getNome(), produto.getPreco(),
-                                    produto.getDescricao(), produto.getCodigo()});
+        this.sessionFactory.getCurrentSession().save(produto);
     }
 
     /**
      * Metodo chamado para listar todos os produtos na tabela Produto do banco de dados.
-     * @return
+     * @return List<Produtos>
      */
+    @Transactional(readOnly=true) //Somente operacao de leitura
     public List todosProdutos () { 
-        String sql = "SELECT * FROM produto";
-        List<Produto> listProdutos = jdbcTemplate.query(sql, new ProdutoMapper());
-        return listProdutos;
+        try{
+            List listCliente = this.sessionFactory.getCurrentSession()
+                    .createQuery("FROM Produto").list();
+            return listCliente;
+        } catch (Exception e){
+            return new ArrayList<Produto>();
+        }
     }
 
     /**
      * Metodo chamado para executar query para procurar produto na tabela
      * Produto do banco de dados. Parametro da consulta: codigo.
      * @param codigo
-     * @return
+     * @return Produto
      */
+    @Transactional(readOnly=true) //Somente operacao de leitura
     public Produto procurarProduto(int codigo) {
-        String sql = "SELECT * FROM produto WHERE codigo=?";
-        try {
-            Produto produto = jdbcTemplate.queryForObject(sql,
-                    new Object[] {codigo},
-                    new ProdutoMapper());
-            return produto;
-        } catch (EmptyResultDataAccessException e) {
-            return null;
+        try{
+            return (Produto) this.sessionFactory.getCurrentSession()
+                    .get(Produto.class, codigo);
+        } catch (Exception e){
+            return new Produto();
         }
     }
 
